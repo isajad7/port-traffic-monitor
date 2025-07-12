@@ -9,8 +9,7 @@ echo "📡 Installing Port Traffic Monitor..."
 echo ""
 
 # Install dependencies
-sudo apt update && sudo apt install -y python3 python3-pip iptables curl
-pip3 install flask
+sudo apt update && sudo apt install -y python3 python3-venv iptables curl
 
 # Create working directory
 INSTALL_DIR="/opt/port-traffic-monitor"
@@ -22,9 +21,20 @@ cd "$INSTALL_DIR" || exit 1
 echo ""
 echo "Enter the ports you want to monitor (space-separated, e.g., 80 443 8080):"
 read -r PORTS
-
-# Save port list to a file
 echo "$PORTS" > ports.txt
+
+# Set up Python virtual environment
+echo ""
+echo "📦 Creating Python virtual environment..."
+python3 -m venv venv
+source venv/bin/activate
+
+# Install Flask in virtualenv
+echo "⬇️ Installing Flask..."
+pip install flask
+
+# Save Python path for systemd use
+PYTHON_PATH="$INSTALL_DIR/venv/bin/python"
 
 # Create monitor.py
 cat <<EOF > monitor.py
@@ -176,7 +186,7 @@ Description=Port Traffic Monitor Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 $INSTALL_DIR/monitor.py
+ExecStart=$PYTHON_PATH $INSTALL_DIR/monitor.py
 WorkingDirectory=$INSTALL_DIR
 Restart=always
 User=$USER
