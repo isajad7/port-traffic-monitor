@@ -11,10 +11,13 @@ Monitor per-port traffic usage on your Ubuntu server with a live web interface.
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/port-traffic-monitor.git
+git clone https://github.com/isajad7/port-traffic-monitor.git
 cd port-traffic-monitor
 chmod +x install.sh
 ./install.sh
+
+##
+
 
 Then visit:
 
