@@ -159,8 +159,8 @@ cat <<EOF > templates/index.html
         <thead>
         <tr>
             <th>Port</th>
-            <th>Received (MB)</th>
-            <th>Sent (MB)</th>
+            <th>Received (GB)</th>
+            <th>Sent (GB)</th>
         </tr>
         </thead>
         <tbody id="traffic-table"></tbody>
@@ -173,8 +173,8 @@ cat <<EOF > templates/index.html
         const table = document.getElementById("traffic-table");
         table.innerHTML = "";
         Object.entries(data).forEach(([port, val]) => {
-            const rx = (val.received_bytes / 1000000).toFixed(2);
-            const tx = (val.sent_bytes / 1000000).toFixed(2);
+            const rx = (val.received_bytes / 1000000000).toFixed(3);
+            const tx = (val.sent_bytes / 1000000000).toFixed(3);
             table.innerHTML += \`<tr><td>\${port}</td><td>\${rx}</td><td>\${tx}</td></tr>\`;
         });
     }
