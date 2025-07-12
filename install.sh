@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo ""
 echo "📡 Installing Port Traffic Monitor..."
 echo ""
 
@@ -9,8 +8,8 @@ sudo apt update
 sudo apt install -y python3 python3-venv python3-full iptables curl
 
 # Detect Python version (e.g., 3.12)
-PY_VER=$(python3 -V | cut -d ' ' -f2 | cut -d '.' -f1,2)
-VENV_PKG="python$PY_VER-venv"
+PY_VER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+VENV_PKG="python${PY_VER}-venv"
 
 # Install version-specific venv package if missing
 if ! dpkg -s $VENV_PKG >/dev/null 2>&1; then
@@ -18,10 +17,13 @@ if ! dpkg -s $VENV_PKG >/dev/null 2>&1; then
   sudo apt install -y $VENV_PKG
 fi
 
+# Get real username (handles sudo)
+USER_NAME=$(logname 2>/dev/null || echo $USER)
+
 # Create working directory
 INSTALL_DIR="/opt/port-traffic-monitor"
 sudo mkdir -p "$INSTALL_DIR"
-sudo chown "$USER" "$INSTALL_DIR"
+sudo chown "$USER_NAME" "$INSTALL_DIR"
 cd "$INSTALL_DIR" || exit 1
 
 # Prompt for ports
@@ -34,11 +36,12 @@ echo "$PORTS" > ports.txt
 echo ""
 echo "📦 Creating Python virtual environment..."
 python3 -m venv venv || { echo "❌ Failed to create virtual environment. Exiting."; exit 1; }
-source venv/bin/activate
+source venv/bin/activate || { echo "❌ Failed to activate virtual environment. Exiting."; exit 1; }
 
-# Install Flask inside venv
-echo "⬇️ Installing Flask..."
-pip install flask || { echo "❌ Failed to install Flask. Exiting."; exit 1; }
+# Upgrade pip and install Flask inside venv
+echo "⬇️ Upgrading pip and installing Flask..."
+pip install --upgrade pip
+pip install flask --break-system-packages || { echo "❌ Failed to install Flask. Exiting."; exit 1; }
 
 # Save Python path
 PYTHON_PATH="$INSTALL_DIR/venv/bin/python"
@@ -194,7 +197,7 @@ After=network.target
 ExecStart=$PYTHON_PATH $INSTALL_DIR/monitor.py
 WorkingDirectory=$INSTALL_DIR
 Restart=always
-User=$USER
+User=$USER_NAME
 
 [Install]
 WantedBy=multi-user.target
@@ -209,3 +212,4 @@ sudo systemctl start port-traffic-monitor.service
 echo ""
 echo "✅ Port Traffic Monitor installed and running!"
 echo "🌐 Visit: http://<your-server-ip>:5000"
+echo ""
