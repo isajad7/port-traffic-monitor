@@ -11,12 +11,13 @@ A lightweight and simple tool to monitor **per-port traffic usage** on your Ubun
 
 ---
 
-## 🚀 Quick Install (1-line)
+## 🚀 Quick Install 
 
 اگر فقط می‌خوای سریع نصبش کنی و راه بندازی، این دستور رو در ترمینال بزن:
 
 ```bash
 git clone https://github.com/isajad7/port-traffic-monitor.git && cd port-traffic-monitor && chmod +x install.sh && ./install.sh
+```
 
 
 
@@ -26,5 +27,7 @@ git clone https://github.com/isajad7/port-traffic-monitor.git && cd port-traffic
 cpp
 Copy
 Edit
+```
 http://<your-server-ip>:5000
+```
 در آنجا یک داشبورد زنده مشاهده خواهید کرد که میزان ترافیک هر پورت را به‌صورت لحظه‌ای (MB) نمایش می‌دهد.
