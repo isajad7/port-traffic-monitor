@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# ------------------------------
-# Port Traffic Monitor Installer
-# ------------------------------
-
 echo ""
 echo "📡 Installing Port Traffic Monitor..."
 echo ""
 
-# Install dependencies
-sudo apt update && sudo apt install -y python3 python3-venv iptables curl
+# Update and install required base packages
+sudo apt update
+sudo apt install -y python3 python3-venv python3-full iptables curl
+
+# Detect Python version (e.g., 3.12)
+PY_VER=$(python3 -V | cut -d ' ' -f2 | cut -d '.' -f1,2)
+VENV_PKG="python$PY_VER-venv"
+
+# Install version-specific venv package if missing
+if ! dpkg -s $VENV_PKG >/dev/null 2>&1; then
+  echo "🧱 Installing $VENV_PKG ..."
+  sudo apt install -y $VENV_PKG
+fi
 
 # Create working directory
 INSTALL_DIR="/opt/port-traffic-monitor"
@@ -23,23 +30,22 @@ echo "Enter the ports you want to monitor (space-separated, e.g., 80 443 8080):"
 read -r PORTS
 echo "$PORTS" > ports.txt
 
-# Set up Python virtual environment
+# Create and activate virtual environment
 echo ""
 echo "📦 Creating Python virtual environment..."
-python3 -m venv venv
+python3 -m venv venv || { echo "❌ Failed to create virtual environment. Exiting."; exit 1; }
 source venv/bin/activate
 
-# Install Flask in virtualenv
+# Install Flask inside venv
 echo "⬇️ Installing Flask..."
-pip install flask
+pip install flask || { echo "❌ Failed to install Flask. Exiting."; exit 1; }
 
-# Save Python path for systemd use
+# Save Python path
 PYTHON_PATH="$INSTALL_DIR/venv/bin/python"
 
 # Create monitor.py
 cat <<EOF > monitor.py
 import os
-import sys
 import json
 import threading
 import time
@@ -48,7 +54,6 @@ from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
 
-# Load ports
 with open("ports.txt") as f:
     ports_to_monitor = [int(p) for p in f.read().strip().split()]
 
@@ -195,7 +200,7 @@ User=$USER
 WantedBy=multi-user.target
 EOF
 
-# Enable and start the service
+# Enable and start service
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable port-traffic-monitor.service
