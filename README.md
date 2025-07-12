@@ -24,9 +24,7 @@ git clone https://github.com/isajad7/port-traffic-monitor.git && cd port-traffic
 🌐 Access the Web Interface
 پس از نصب، مرورگر را باز کنید و به آدرس زیر بروید:
 
-cpp
-Copy
-Edit
+
 ```
 http://<your-server-ip>:5000
 ```
