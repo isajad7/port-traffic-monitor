@@ -19,9 +19,9 @@ A lightweight and simple tool to monitor **per-port traffic usage** on your Ubun
 git clone https://github.com/isajad7/port-traffic-monitor.git && cd port-traffic-monitor && chmod +x install.sh && ./install.sh
 ```
 
-</h2>
-در حین نصب، از شما خواسته می‌شود پورت‌هایی را که مایل به مانیتور کردن آن‌ها هستید وارد کنید. لطفاً شماره پورت‌ها را با فاصله از یکدیگر جدا نمایید.
 <h2>
+در حین نصب، از شما خواسته می‌شود پورت‌هایی را که مایل به مانیتور کردن آن‌ها هستید وارد کنید. لطفاً شماره پورت‌ها را با فاصله از یکدیگر جدا نمایید.
+</h2>
 
 
 
